@@ -5,7 +5,7 @@ endif
 
 .DEFAULT_GOAL := help
 
-.PHONY: $(shell grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(shell find makefiles -name "*.Makefile" -type f) | sort | cut -d":" -f1 | tr "\n" " ")
+.PHONY: $(shell grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | cut -d":" -f1 | tr "\n" " ")
 
 help: ## Display this help message
 	@echo "==================================================================="
