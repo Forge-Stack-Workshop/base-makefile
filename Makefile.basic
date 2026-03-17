@@ -39,7 +39,3 @@ help: ## Display this help message
 	@echo "  SERVICE=$(SERVICE)"
 	@echo ""
 	@echo "==================================================================="
-
-help-%: ## Show detailed help for a specific command
-	@echo "Showing help for: $*"
-	@grep -A 5 -B 2 "^$*:" $(shell find makefiles -name "*.Makefile" -type f) || echo "Command '$*' not found"
