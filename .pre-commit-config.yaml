@@ -1,0 +1,12 @@
+repos:
+  - repo: https://github.com/chrysa/pre-commit-hooks-changelog
+    rev: v1.0.0
+    hooks:
+      - id: changelog-check
+  - repo: https://github.com/chrysa/pre-commit-tools
+    rev: v1.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
