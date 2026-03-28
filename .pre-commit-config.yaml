@@ -1,12 +1,55 @@
 repos:
-  - repo: https://github.com/chrysa/pre-commit-hooks-changelog
-    rev: v1.0.0
-    hooks:
-      - id: changelog-check
-  - repo: https://github.com/chrysa/pre-commit-tools
-    rev: v1.0.0
+  # Hooks de base
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+
+  # Linter et formateur Python (ruff remplace flake8, isort, black)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.8
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # Type checking Python
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.19.1
+    hooks:
+      - id: mypy
+
+  # Sécurité : analyse statique du code Python
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.9.4
+    hooks:
+      - id: bandit
+        args: ["-r", "."]
+
+  # Sécurité : détection de secrets dans le code
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+
+  # Changelog
+  - repo: https://github.com/chrysa/pre-commit-hooks-changelog
+    rev: v0.1.4
+    hooks:
+      - id: generate-changelog
+
+  # Outils chrysa : détection de code de debug, secrets .env, logger, print, sorters
+  - repo: https://github.com/chrysa/pre-commit-tools
+    rev: 0.0.63
+    hooks:
+      - id: debugger-detection
+      - id: python-print-detection
+      - id: python-logger-detection
+      - id: env-file-check
+      - id: yaml-sorter
+      - id: json-sorter
