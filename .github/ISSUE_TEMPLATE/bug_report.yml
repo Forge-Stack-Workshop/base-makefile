@@ -1,0 +1,42 @@
+body:
+- attributes:
+    value: 'Thank you for reporting this bug. Please fill in the information below.
+
+      '
+  type: markdown
+- attributes:
+    description: Describe the bug clearly and concisely.
+    label: Bug description
+  id: description
+  type: textarea
+  validations:
+    required: true
+- attributes:
+    description: How can we reproduce this behaviour?
+    label: Steps to reproduce
+    placeholder: '1. ...
+
+      2. ...
+
+      '
+  id: steps
+  type: textarea
+  validations:
+    required: true
+- attributes:
+    description: What should have happened?
+    label: Expected behaviour
+  id: expected
+  type: textarea
+  validations:
+    required: true
+- attributes:
+    description: Logs, screenshots, environment details, etc.
+    label: Additional context
+  id: context
+  type: textarea
+description: Report a bug or unexpected behaviour
+labels:
+- bug
+name: Bug report
+title: '[Bug]: '
