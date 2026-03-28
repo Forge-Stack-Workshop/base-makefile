@@ -3,19 +3,22 @@ ifneq (,)
 	$(error This Makefile requires GNU Make)
 endif
 
+# ─── Variables ────────────────────────────────────────────────────────────────
+PROJECT_NAME ?= My Project
+
 .DEFAULT_GOAL := help
 
 .PHONY: $(shell grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | cut -d":" -f1 | tr "\n" " ")
 
 help: ## Display this help message
 	@echo "==================================================================="
-	@echo "Padam AV Backoffice Development Environment"
+	@echo "  $(PROJECT_NAME)"
 	@echo "==================================================================="
 	@echo ""
 	@echo "Available commands:"
 	@echo ""
 	@for makefile in $(shell echo $(MAKEFILE_LIST) | sort); do \
-		grep -E '^[a-zA-Z_-]+(\([^)]*\))?:.*?## .*$$' $$file 2>/dev/null | sort | \
+		grep -E '^[a-zA-Z_-]+([^)]*)?:.*?## .*$$' $$makefile 2>/dev/null | sort | \
 			awk 'BEGIN {FS = ":.*?## "}; { \
 				cmd = $$1; \
 				desc = $$2; \
@@ -36,6 +39,6 @@ help: ## Display this help message
 	@echo "  make test             # Run tests"
 	@echo ""
 	@echo "Environment Variables:"
-	@echo "  SERVICE=$(SERVICE)"
+	@echo "  PROJECT_NAME=$(PROJECT_NAME)"
 	@echo ""
 	@echo "==================================================================="

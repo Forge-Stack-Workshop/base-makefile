@@ -1,0 +1,32 @@
+body:
+- attributes:
+    value: "Thank you for your suggestion. Please describe the feature or improvement you would like.\n"
+  type: markdown
+- attributes:
+    description: Describe the feature or improvement you would like.
+    label: Description
+  id: description
+  type: textarea
+  validations:
+    required: true
+- attributes:
+    description: Why would this feature be useful?
+    label: Motivation / context
+  id: motivation
+  type: textarea
+  validations:
+    required: true
+- attributes:
+    description: Have you considered any alternative approaches?
+    label: Alternatives considered
+  id: alternatives
+  type: textarea
+- attributes:
+    label: Additional context
+  id: context
+  type: textarea
+description: Propose an improvement or a new feature
+labels:
+- enhancement
+name: Feature request
+title: '[Feature]: '
