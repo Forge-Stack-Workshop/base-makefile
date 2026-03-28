@@ -1,0 +1,18 @@
+name: CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup GitVersion
+        uses: gittools/actions/gitversion/setup@v1
+      - name: Execute GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v1
+      - name: Deploy (placeholder)
+        run: echo "Déploiement version ${{ steps.gitversion.outputs.fullSemVer }}"
