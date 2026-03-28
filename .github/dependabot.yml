@@ -1,40 +1,20 @@
-version: 2
 updates:
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    allow:
-      - dependency-type: "all"
-    commit-message:
-      prefix: "pip"
-    labels:
-      - "dependencies"
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    allow:
-      - dependency-type: "all"
-    commit-message:
-      prefix: "actions"
-    labels:
-      - "dependencies"
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    allow:
-      - dependency-type: "all"
-    commit-message:
-      prefix: "pip"
-    labels:
-      - "dependencies"
-  - package-ecosystem: "pre-commit"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "pre-commit"
-    labels:
-      - "dependencies"
+- allow:
+  - dependency-type: all
+  commit-message:
+    prefix: ci(actions)
+  directory: /
+  labels:
+  - dependencies
+  package-ecosystem: github-actions
+  schedule:
+    interval: weekly
+- commit-message:
+    prefix: ci(pre-commit)
+  directory: /
+  labels:
+  - dependencies
+  package-ecosystem: pre-commit
+  schedule:
+    interval: weekly
+version: 2

@@ -8,25 +8,46 @@ on:
 
 jobs:
   pre-commit:
+    name: Pre-commit checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: Install pre-commit
         run: pip install pre-commit
       - name: Run pre-commit
         run: pre-commit run --all-files
 
-  version:
+  validate-makefile:
+    name: Validate Makefiles
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check Makefile syntax
+        run: |
+          make --dry-run --just-print help 2>&1 | head -5 || true
+          make -n help 2>&1 | head -5 || true
+
+  version:
+    name: Compute version (GitVersion)
+    runs-on: ubuntu-latest
+    outputs:
+      semver: ${{ steps.gitversion.outputs.fullSemVer }}
+      major: ${{ steps.gitversion.outputs.major }}
+      minor: ${{ steps.gitversion.outputs.minor }}
+      patch: ${{ steps.gitversion.outputs.patch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup GitVersion
-        uses: gittools/actions/gitversion/setup@v1
+        uses: gittools/actions/gitversion/setup@v3
+        with:
+          versionSpec: '6.x'
       - name: Execute GitVersion
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v1
+        uses: gittools/actions/gitversion/execute@v3
       - name: Show version
-        run: echo "Version: ${{ steps.gitversion.outputs.fullSemVer }}"
+        run: echo "Version ${{ steps.gitversion.outputs.fullSemVer }}"

@@ -3,6 +3,9 @@ ifneq (,)
 	$(error This Makefile requires GNU Make)
 endif
 
+# ─── Variables ────────────────────────────────────────────────────────────────
+PROJECT_NAME ?= My Project
+
 include $(shell find . -type f -name "*.[Mm]akefile" -not -path "*/\.*" -exec echo " {}" \;)
 
 .DEFAULT_GOAL := help
@@ -11,7 +14,7 @@ include $(shell find . -type f -name "*.[Mm]akefile" -not -path "*/\.*" -exec ec
 
 help: ## Display this help message
 	@echo "==================================================================="
-	@echo "Padam AV Backoffice Development Environment"
+	@echo "  $(PROJECT_NAME)"
 	@echo "==================================================================="
 	@echo ""
 	@echo "Available commands:"
@@ -21,10 +24,15 @@ help: ## Display this help message
 		case $$category in \
 			gobal_rules) continue ;; \
 			development) icon="⚡" ;; \
-			docker) icon="🐳" ;; \
-			quality) icon="🔍" ;; \
-			tests) icon="🧪" ;; \
-			*) icon="📦" ;; \
+			docker)      icon="🐳" ;; \
+			quality)     icon="🔍" ;; \
+			tests)       icon="🧪" ;; \
+			tools)       icon="🔧" ;; \
+			project)     icon="🚀" ;; \
+			ci|cicd)     icon="⚙️"  ;; \
+			lint)        icon="🧹" ;; \
+			secrets)     icon="🔐" ;; \
+			*)           icon="📌" ;; \
 		esac; \
 		echo "$$icon $$(echo $$category | tr '[:lower:]' '[:upper:]'):"; \
 		grep -E '^[a-zA-Z_-]+(\([^)]*\))?:.*?## .*$$' $$file 2>/dev/null | sort | \
