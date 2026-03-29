@@ -1,3 +1,7 @@
+default_language_version:
+  python: python3.14
+fail_fast: false
+minimum_pre_commit_version: 4.1.0
 repos:
 - hooks:
   - id: trailing-whitespace
@@ -7,32 +11,15 @@ repos:
   - id: check-merge-conflict
   - id: check-added-large-files
   repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: f1dff44d3a9ae852957f34def96390f28719c232
+  rev: v6.0.0
 - hooks:
-  - args:
-    - --fix
-    id: ruff
-  - id: ruff-format
-  repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.8
-- hooks:
-  - id: mypy
-  repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.19.1
-- hooks:
-  - id: bandit
-  repo: https://github.com/PyCQA/bandit
-  rev: 4dacfcbe3651ae13a4dce10d6025086bfceed8be
-- hooks:
-  - id: detect-secrets
+  - exclude: \.pre-commit-config\.yaml
+    id: detect-secrets
   repo: https://github.com/Yelp/detect-secrets
-  rev: 50119d658ab48021cad234fc5c8d3253263b2ec0
+  rev: v1.5.0
 - hooks:
-  - id: debugger-detection
-  - id: python-print-detection
-  - id: python-logger-detection
-  - id: env-file-check
   - id: yaml-sorter
   - id: json-sorter
+  - id: env-file-check
   repo: https://github.com/chrysa/pre-commit-tools
-  rev: 18c9b611ebfd6d211a4732baa6834c919c9aa699
+  rev: 4462e85fc30aeec4bddb1728383c504626f1b9d2
