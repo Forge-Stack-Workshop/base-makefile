@@ -1,5 +1,12 @@
 # base-makefile
 
+[![CI](https://github.com/Forge-Stack-Workshop/base-makefile/actions/workflows/ci.yml/badge.svg)](https://github.com/Forge-Stack-Workshop/base-makefile/actions/workflows/ci.yml)
+[![CD](https://github.com/Forge-Stack-Workshop/base-makefile/actions/workflows/cd.yml/badge.svg)](https://github.com/Forge-Stack-Workshop/base-makefile/actions/workflows/cd.yml)
+[![Latest Release](https://img.shields.io/github/v/release/Forge-Stack-Workshop/base-makefile)](https://github.com/Forge-Stack-Workshop/base-makefile/releases/latest)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Forge-Stack-Workshop_base-makefile&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Forge-Stack-Workshop_base-makefile)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+[![GitVersion](https://img.shields.io/badge/versioning-GitVersion-blue)](https://gitversion.net/)
+
 Generic, reusable Makefile templates for any project.
 
 ## Templates
