@@ -14,7 +14,7 @@ repos:
     id: ruff
   - id: ruff-format
   repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.8
+  rev: c53b915162b475dfc95c73f94219e6f87ace2fca
 - hooks:
   - id: mypy
   repo: https://github.com/pre-commit/mirrors-mypy
@@ -35,4 +35,4 @@ repos:
   - id: yaml-sorter
   - id: json-sorter
   repo: https://github.com/chrysa/pre-commit-tools
-  rev: 18c9b611ebfd6d211a4732baa6834c919c9aa699
+  rev: b97ae91d8a45eb6f556fe938fa8bd58294c9a5e6
