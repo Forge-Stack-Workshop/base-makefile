@@ -1,5 +1,7 @@
 # base-makefile
 
+[![CI](https://github.com/Forge-Stack-Workshop/base-makefile/actions/workflows/ci.yml/badge.svg)](https://github.com/Forge-Stack-Workshop/base-makefile/actions/workflows/ci.yml)
+
 Generic, reusable Makefile templates for any project.
 
 ## Templates
