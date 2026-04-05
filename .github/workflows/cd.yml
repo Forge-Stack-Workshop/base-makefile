@@ -16,7 +16,7 @@ jobs:
         fetch-depth: 0
     - id: gitversion
       name: Compute GitVersion
-      uses: chrysa/github-actions/gitversion@v1.0.3
+      uses: chrysa/github-actions/gitversion@v1.0.8
     - env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       if: github.ref == 'refs/heads/main'
