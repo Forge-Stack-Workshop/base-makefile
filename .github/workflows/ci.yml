@@ -10,8 +10,8 @@ jobs:
     name: Pre-commit checks
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
+    - uses: actions/checkout@v6
+    - uses: actions/setup-python@v6
       with:
         python-version: '3.14'
     - name: Install pre-commit
@@ -26,7 +26,7 @@ jobs:
     - pre-commit
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
     - env:
@@ -43,7 +43,7 @@ jobs:
     name: Validate Makefiles
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Check Makefile syntax (basic)
       run: 'make -n -f Makefile.basic help 2>&1 | head -10 || true
 
@@ -63,12 +63,12 @@ jobs:
       semver: ${{ steps.gitversion.outputs.fullSemVer }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
     - id: gitversion
       name: Compute GitVersion
-      uses: chrysa/github-actions/gitversion@v1.0.3
+      uses: chrysa/github-actions/gitversion@v1.0.8
     - name: Show version
       run: echo "Version ${{ steps.gitversion.outputs.fullSemVer }}"
       shell: bash
