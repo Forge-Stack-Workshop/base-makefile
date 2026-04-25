@@ -46,6 +46,12 @@ Override the project name:
 make help PROJECT_NAME="my-project"
 ```
 
+### `Makefile.python`
+
+Python-oriented template with Docker Compose support. Covers `install`, `lint`, `format`, `typecheck`, `test`, `build`, `pre-commit`, and Docker helpers.
+
+See [`Makefile.python`](Makefile.python) for the full template.
+
 ## Conventions
 
 - All recipe lines must be prefixed with `@` to suppress shell echo.
@@ -53,7 +59,61 @@ make help PROJECT_NAME="my-project"
 
 ```makefile
 build: ## Build the project
-	@docker build -t myapp .
+        @docker build -t myapp .
+```
+
+## Non-root `package.json` projects
+
+When the app lives in a subdirectory (e.g. `app/`) rather than the repo root, CI workflows
+must set the working directory explicitly:
+
+```yaml
+# .github/workflows/ci.yml
+- name: Install
+  working-directory: app
+  run: npm ci
+
+- name: Build
+  working-directory: app
+  run: npm run build
+```
+
+The Makefile should forward targets accordingly:
+
+```makefile
+install: ## Install dependencies
+        @cd app && npm ci
+
+build: ## Build the application
+        @cd app && npm run build
+```
+
+## `ci.Makefile` example
+
+When using `Makefile.with-sub-folder`, place CI-specific targets in `makefiles/ci.Makefile`:
+
+```makefile
+# makefiles/ci.Makefile
+# CI targets — run without Docker in CI runners
+
+.PHONY: ci-pre-commit
+ci-pre-commit: ## CI: run all pre-commit hooks
+        @pre-commit run --all-files
+
+.PHONY: ci-lint
+ci-lint: ## CI: run linter
+        @npm run lint --prefix app
+
+.PHONY: ci-test
+ci-test: ## CI: run test suite with coverage
+        @npm run test:ci --prefix app
+
+.PHONY: ci-build
+ci-build: ## CI: build for production
+        @npm run build --prefix app
+
+.PHONY: ci
+ci: ci-pre-commit ci-lint ci-test ci-build ## CI: run all checks
 ```
 
 ## Versioning
