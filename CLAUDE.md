@@ -1,1 +1,50 @@
-IyBDTEFVREUubWQg4oCUIGJhc2UtbWFrZWZpbGUKCiMjIFJvbGUKCkNvbGxlY3Rpb24gZGUgdGVtcGxhdGVzIE1ha2VmaWxlIHLDqXV0aWxpc2FibGVzIHBvdXIgbGVzIHByb2pldHMgY2hyeXNhIC8gRm9yZ2UtU3RhY2stV29ya3Nob3AuCgojIyBUZW1wbGF0ZXMgZGlzcG9uaWJsZXMKCnwgRmljaGllciB8IFVzYWdlIHwKfC0tLS0tLS0tfC0tLS0tLS18CnwgYE1ha2VmaWxlLmJhc2ljYCB8IFByb2pldCBzaW1wbGUgbW9uby1maWNoaWVyIHwKfCBgTWFrZWZpbGUud2l0aC1zdWItZm9sZGVyYCB8IFByb2pldCBtdWx0aS1maWNoaWVyIGF2ZWMgYG1ha2VmaWxlcy9gIChjYXTDqWdvcmllcyBhdXRvLWTDqXRlY3TDqWVzKSB8CnwgYE1ha2VmaWxlLnB5dGhvbmAgfCBQcm9maWwgUHl0aG9uIGF2ZWMgY2libGVzIGxpbnQvdGVzdC9mb3JtYXQvdmVudiB8CgojIyBDb252ZW50aW9uIG9ibGlnYXRvaXJlCgpgYGBtYWtlZmlsZQp0YXJnZXQ6ICMjIERlc2NyaXB0aW9uIGNvdXJ0ZSBkZSBsYSBjaWJsZQoJQGNvbW1hbmRlCmBgYAoKLSBUb3V0ZXMgbGVzIGNvbW1hbmRlcyBwcsOpZml4w6llcyBwYXIgYEBgIChwYXMgZCfDqWNobyBzaGVsbCkuCi0gYCMjIERlc2NyaXB0aW9uYCBhcHLDqHMgbGUgbm9tIGRlIGNpYmxlID0gYXBwYXJhw650IGRhbnMgYG1ha2UgaGVscGAuCgojIyBTdHJ1Y3R1cmUgYE1ha2VmaWxlLndpdGgtc3ViLWZvbGRlcmAKClBsYWNlciBsZXMgZmljaGllcnMgYCouTWFrZWZpbGVgIGRhbnMgYG1ha2VmaWxlcy9gLiBMYSBjaWJsZSBgaGVscGAgZ3JvdXBlIHBhciBub20gZGUgZmljaGllciA6Cgl8IEZpY2hpZXIgfCBJY8O0bmUgfCBDYXTDqWdvcmllIHwKfC0tLS0tLS0tfC0tLS0tLS18LS0tLS0tLS0tLS18CnwgYGRldmVsb3BtZW50Lk1ha2VmaWxlYCB8IOKaoiB8IERFVkVMT1BNRU5UIHwKfCBgZG9ja2VyLk1ha2VmaWxlYCB8IPCfkLMgfCBET0NLRVIgfAp8IGBxdWFsaXR5Lk1ha2VmaWxlYCB8IPCfkIwgfCBRVUFMSVRZIHwKfCBgdGVzdHMuTWFrZWZpbGVgIHwg8J+nkiB8IFRFU1RTIHwKfCBgY2kuTWFrZWZpbGVgIHwg4oCvwqkgfCBDSS9DSUNEIHwKCiMjIENJIC8gU3RhbmRhcmRzCgotIENJIHdvcmtmbG93IDogYC5naXRodWIvd29ya2Zsb3dzL2NpLnltbGAKLSBwcmUtY29tbWl0IDogYC5wcmUtY29tbWl0LWNvbmZpZy55YW1sYAotIFZlcnNpb25pbmcgYXV0b21hdGlxdWUgOiBHaXRWZXJzaW9uIChgR2l0VmVyc2lvbi55bWxgKQoKIyMgUFJzIG91dmVydGVzCgotICMxOCAoZGVwZW5kYWJvdCkgOiBhY3Rpb25zL2NoZWNrb3V0IHY0IOKGkiB2NiDigJQgw6AgbWVyZ2VyCgojIyBMaWVucwoKLSBbR2l0SHViXShodHRwczovL2dpdGh1Yi5jb20vRm9yZ2UtU3RhY2stV29ya3Nob3AvYmFzZS1tYWtlZmlsZSkKLSBbTm90aW9uIOKAkyBiYXNlLW1ha2VmaWxlXShodHRwczovL3d3dy5ub3Rpb24uc28vYmFzZS1tYWtlZmlsZS1NYWtlZmlsZS1zdGFuZGFyZC1yLXV0aWxpc2FibGUtMzM5NTkyOTNlMzVlODEyZDkyMzdmYWQ3ODMwYWM5NDEpCg==
+# CLAUDE.md — base-makefile
+
+## Role
+
+Collection de templates Makefile réutilisables pour les projets chrysa / Forge-Stack-Workshop.
+
+## Templates disponibles
+
+| Fichier | Usage |
+|---------|-------|
+| `Makefile.basic` | Projet simple mono-fichier |
+| `Makefile.with-sub-folder` | Projet multi-fichier avec `makefiles/` (catégories auto-détectées) |
+| `Makefile.python` | Profil Python avec cibles lint/test/format/venv |
+
+## Convention obligatoire
+
+```makefile
+target: ## Description courte de la cible
+	@commande
+```
+
+- Toutes les commandes préfixées par `@` (pas d'écho shell).
+- `## Description` après le nom de cible = apparaît dans `make help`.
+
+## Structure `Makefile.with-sub-folder`
+
+Placer les fichiers `*.Makefile` dans `makefiles/`. La cible `help` groupe par nom de fichier :
+
+| Fichier | Icône | Catégorie |
+|---------|-------|-----------|
+| `development.Makefile` | ⚡ | DEVELOPMENT |
+| `docker.Makefile` | 🐳 | DOCKER |
+| `quality.Makefile` | 🔍 | QUALITY |
+| `tests.Makefile` | 🧪 | TESTS |
+| `ci.Makefile` | ⚙️ | CI/CICD |
+
+## CI / Standards
+
+- CI workflow : `.github/workflows/ci.yml`
+- pre-commit : `.pre-commit-config.yaml`
+- Versioning automatique : GitVersion (`GitVersion.yml`)
+
+## PRs ouvertes
+
+- #18 (dependabot) : actions/checkout v4 → v6 — à merger
+
+## Liens
+
+- [GitHub](https://github.com/Forge-Stack-Workshop/base-makefile)
+- [Notion — base-makefile](https://www.notion.so/base-makefile-Makefile-standard-r-utilisable-33959293e35e812d9237fad7830ac941)

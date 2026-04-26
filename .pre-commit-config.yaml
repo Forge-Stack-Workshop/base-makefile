@@ -22,4 +22,4 @@ repos:
   - id: json-sorter
   - id: env-file-check
   repo: https://github.com/chrysa/pre-commit-tools
-  rev: 4462e85fc30aeec4bddb1728383c504626f1b9d2
+  rev: v0.1.1-37
