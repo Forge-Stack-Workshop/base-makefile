@@ -14,3 +14,4 @@ Thumbs.db
 
 # pre-commit cache
 .pre-commit-cache/
+.gitnexus
