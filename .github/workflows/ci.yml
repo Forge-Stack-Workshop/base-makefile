@@ -33,7 +33,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       name: SonarCloud scan
-      uses: SonarSource/sonarqube-scan-action@v7
+      uses: SonarSource/sonarqube-scan-action@v8
       with:
         args: '-Dsonar.projectKey=Forge-Stack-Workshop_base-makefile -Dsonar.organization=forge-stack-workshop
           -Dsonar.projectName=base-makefile -Dsonar.sources=. -Dsonar.exclusions=**/.git/**,**/.github/**,**/.vscode/**
