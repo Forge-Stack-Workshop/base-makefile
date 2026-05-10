@@ -18,7 +18,8 @@ repos:
   repo: https://github.com/Yelp/detect-secrets
   rev: v1.5.0
 - hooks:
-  - id: yaml-sorter
+  - exclude: ^\.github/workflows/
+    id: yaml-sorter
   - id: json-sorter
   - id: env-file-check
   repo: https://github.com/chrysa/pre-commit-tools
