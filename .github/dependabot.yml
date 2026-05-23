@@ -1,20 +1,46 @@
 updates:
-- allow:
-  - dependency-type: all
+- assignees:
+  - chrysa
   commit-message:
-    prefix: ci(actions)
-  directory: /
+    prefix: '[SKIP CI] [GA] '
+  cooldown:
+    default-days: 7
+  directory: .github/workflows/
+  groups:
+    actions-official:
+      patterns:
+      - actions/*
+    community-actions:
+      patterns:
+      - '*'
+    peter-evans:
+      patterns:
+      - peter-evans/*
   labels:
+  - skip-ci
   - dependencies
+  - Ci
+  open-pull-requests-limit: 8
   package-ecosystem: github-actions
+  reviewers:
+  - chrysa
   schedule:
-    interval: weekly
-- commit-message:
-    prefix: ci(pre-commit)
+    cronjob: 0 4 * * 5
+    interval: cron
+- assignees:
+  - chrysa
+  commit-message:
+    prefix: '[SKIP CI] [pre-commit] '
   directory: /
   labels:
+  - skip-ci
   - dependencies
+  - Pre-commit
+  open-pull-requests-limit: 2
   package-ecosystem: pre-commit
+  reviewers:
+  - chrysa
   schedule:
-    interval: weekly
+    cronjob: 0 4 * * 5
+    interval: cron
 version: 2
