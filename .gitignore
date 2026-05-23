@@ -15,3 +15,6 @@ Thumbs.db
 # pre-commit cache
 .pre-commit-cache/
 .gitnexus
+
+# CodeGraph (local index — never commit)
+.codegraph/
