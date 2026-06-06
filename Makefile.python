@@ -150,3 +150,32 @@ ci-test: $(REPORTS_DIR) ## CI: run pytest with coverage
 
 .PHONY: ci
 ci: ci-lint ci-test ## CI: run all checks
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Docs (drift-checked)
+# ──────────────────────────────────────────────────────────────────────────────
+# Generated docs are build artifacts: regenerate them mechanically, then fail if
+# the committed copy drifts. The CI composite action
+# (chrysa/github-actions/doc-drift) and the pre-commit `docs-drift-gate` hook
+# rely on these target names. Fill in `docs-code` (and optionally
+# `docs-screenshots`) with this project's generators — keep them deterministic
+# (sorted output, pinned hashes) so the diff stays quiet.
+DOCS_PATHS ?= docs/
+
+.PHONY: docs-code
+docs-code: ## Regenerate code-derived docs — TODO: add this project's generators
+	@echo "TODO: implement 'docs-code' to write deterministic docs under $(DOCS_PATHS)" >&2
+	@exit 1
+
+.PHONY: docs
+docs: docs-code ## Regenerate every generated doc (add screenshot deps as needed)
+
+.PHONY: docs-code-check
+docs-code-check: docs-code ## Fail if code-derived docs drift (pre-commit pre-push)
+	@git diff --exit-code -- $(DOCS_PATHS) \
+		|| { echo "Code-derived docs are stale — run 'make docs-code' and commit." >&2; exit 1; }
+
+.PHONY: docs-check
+docs-check: docs ## Fail if any generated doc drifts (CI)
+	@git diff --exit-code -- $(DOCS_PATHS) \
+		|| { echo "Generated docs are stale — run 'make docs' and commit." >&2; exit 1; }
