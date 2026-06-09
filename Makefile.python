@@ -1,8 +1,12 @@
+# makefile-tier: python-app
 # Makefile.python
 # Python project Makefile template with Docker Compose support
 # chrysa ecosystem standard — Python 3.14 target
+# Conforms to shared-standards EXECUTION_STANDARD.md §1 (python-app tier).
 #
 # Copy to your project root as `Makefile` and update the variables below.
+# For a pure library with no docker-compose.yml, use the `lib` tier instead
+# (reference: chrysa/django-pytest/Makefile).
 
 DOCKER_IMAGE    ?= your-project-image
 PROJECT_NAME    ?= your-project
@@ -31,6 +35,13 @@ install: ## Install project dependencies (local)
 .PHONY: install-dev
 install-dev: ## Install all dev dependencies (local)
 	$(PYTHON) -m pip install -e ".[tests,lint,dev]"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Dev
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: dev
+dev: ## Start the dev stack with hot-reload (Ctrl+C to stop)
+	$(DC) up --build
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Build
@@ -80,7 +91,11 @@ $(REPORTS_DIR):
 	mkdir -p $(REPORTS_DIR)
 
 .PHONY: test
-test: $(REPORTS_DIR) ## Run tests with coverage (in Docker)
+test: ## Run unit tests in Docker (fast, no coverage)
+	$(DC_RUN) pytest $(TESTS_DIR) -v
+
+.PHONY: test-cov
+test-cov: $(REPORTS_DIR) ## Run tests with coverage in Docker (writes coverage.xml)
 	$(DC_RUN) pytest $(TESTS_DIR) \
 		--cov=$(SOURCE_DIR) \
 		--cov-report=term-missing \
@@ -88,17 +103,16 @@ test: $(REPORTS_DIR) ## Run tests with coverage (in Docker)
 		--junitxml=$(REPORTS_DIR)/test-results.xml \
 		-v
 
+.PHONY: docker-test
+docker-test: test-cov ## Run the CI-compatible test suite in Docker (alias for test-cov)
+
 .PHONY: test-local
-test-local: $(REPORTS_DIR) ## Run tests locally (no Docker)
+test-local: $(REPORTS_DIR) ## Run tests locally without Docker (IDE convenience only)
 	pytest $(TESTS_DIR) \
 		--cov=$(SOURCE_DIR) \
 		--cov-report=term-missing \
 		--cov-report=xml:$(REPORTS_DIR)/coverage.xml \
 		-v
-
-.PHONY: test-fast
-test-fast: ## Run tests without coverage (fast)
-	$(DC_RUN) pytest $(TESTS_DIR) -v
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Pre-commit
@@ -114,12 +128,12 @@ pre-commit-update: ## Update pre-commit hooks to latest versions
 # ──────────────────────────────────────────────────────────────────────────────
 # Docker Compose helpers
 # ──────────────────────────────────────────────────────────────────────────────
-.PHONY: up
-up: ## Start all services (detached)
+.PHONY: docker-up
+docker-up: ## Start all services (detached)
 	$(DC) up -d
 
-.PHONY: down
-down: ## Stop all services
+.PHONY: docker-down
+docker-down: ## Stop all services
 	$(DC) down
 
 .PHONY: logs
@@ -150,6 +164,17 @@ ci-test: $(REPORTS_DIR) ## CI: run pytest with coverage
 
 .PHONY: ci
 ci: ci-lint ci-test ## CI: run all checks
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Quality gate (regression baseline — see EXECUTION_STANDARD.md §12)
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: quality-gate-baseline
+quality-gate-baseline: ## Capture the quality-gate baseline after a clean run
+	$(PYTHON) scripts/quality_gate.py baseline
+
+.PHONY: quality-gate-verify
+quality-gate-verify: ## Verify current metrics against the baseline
+	$(PYTHON) scripts/quality_gate.py verify
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Docs (drift-checked)

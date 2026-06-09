@@ -1,4 +1,5 @@
 #!make
+# makefile-tier: infra   # frontend/generic skeleton — set to your project's tier
 ifneq (,)
 	$(error This Makefile requires GNU Make)
 endif
