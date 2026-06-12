@@ -1,4 +1,5 @@
 #!make
+# makefile-tier: infra   # set for your repo: lib | python-app | fullstack | infra
 ifneq (,)
 	$(error This Makefile requires GNU Make)
 endif
@@ -42,3 +43,38 @@ help: ## Display this help message
 	@echo "  PROJECT_NAME=$(PROJECT_NAME)"
 	@echo ""
 	@echo "==================================================================="
+
+# ─── Standard targets (shared-standards EXECUTION_STANDARD.md §1) ──────────────
+# Stubs so a fresh scaffold passes `makefile-check`. Replace each TODO with the
+# real command for your stack (npm, cargo, go, helm…). Covers the lib + infra
+# tiers; for python-app / fullstack use Makefile.python / Makefile.with-sub-folder.
+
+install: ## Install dependencies
+	@echo "TODO: install dependencies"
+
+lint: ## Run linter
+	@echo "TODO: run linter"
+
+format: ## Auto-format code
+	@echo "TODO: format code"
+
+typecheck: ## Run static type checker
+	@echo "TODO: typecheck"
+
+test: ## Run unit tests
+	@echo "TODO: run tests"
+
+test-cov: ## Run tests with coverage (writes coverage.xml)
+	@echo "TODO: run tests with coverage"
+
+build: ## Build production artefact
+	@echo "TODO: build"
+
+dev: ## Start dev server / watch mode
+	@echo "TODO: dev"
+
+clean: ## Remove generated artefacts and caches
+	@echo "TODO: clean"
+
+pre-commit: ## Run pre-commit hooks on all files
+	@pre-commit run --all-files
