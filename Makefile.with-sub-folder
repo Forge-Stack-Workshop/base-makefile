@@ -1,4 +1,5 @@
 #!make
+# makefile-tier: infra   # set for your repo: lib | python-app | fullstack | infra
 ifneq (,)
 	$(error This Makefile requires GNU Make)
 endif
@@ -63,3 +64,38 @@ help: ## Display this help message
 help-%: ## Show detailed help for a specific command
 	@echo "Showing help for: $*"
 	@grep -A 5 -B 2 "^$*:" $(shell find makefiles -name "*.Makefile" -type f) || echo "Command '$*' not found"
+
+# ─── Standard targets (shared-standards EXECUTION_STANDARD.md §1) ──────────────
+# Stubs so a fresh scaffold passes `makefile-check` (which reads only this root
+# file, not the included makefiles/). Move each into the matching
+# makefiles/<category>.Makefile and delete it here as you wire the real command.
+
+install: ## Install dependencies
+	@echo "TODO: install dependencies"
+
+lint: ## Run linter
+	@echo "TODO: run linter"
+
+format: ## Auto-format code
+	@echo "TODO: format code"
+
+typecheck: ## Run static type checker
+	@echo "TODO: typecheck"
+
+test: ## Run unit tests
+	@echo "TODO: run tests"
+
+test-cov: ## Run tests with coverage (writes coverage.xml)
+	@echo "TODO: run tests with coverage"
+
+build: ## Build production artefact
+	@echo "TODO: build"
+
+dev: ## Start dev server / watch mode
+	@echo "TODO: dev"
+
+clean: ## Remove generated artefacts and caches
+	@echo "TODO: clean"
+
+pre-commit: ## Run pre-commit hooks on all files
+	@pre-commit run --all-files
