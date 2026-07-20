@@ -17,6 +17,20 @@ PYTHON          := python3
 DC              := docker compose
 DC_RUN          := $(DC) run --rm app
 
+# ── Artifact isolation (shared-standards: no caches/venv in the tree) ──────────
+# Host UID/GID: docker-compose services that bind-mount the repo MUST run as
+# `user: "$${UID:-1000}:$${GID:-1000}"` (never root) so nothing written into the
+# mount is root-owned. Cache dirs are redirected OUT of the repo tree for both
+# host-run tools and containers (compose passes these through the environment).
+UID                 ?= $(shell id -u)
+GID                 ?= $(shell id -g)
+_CACHE_BASE         ?= $(if $(XDG_CACHE_HOME),$(XDG_CACHE_HOME),$(HOME)/.cache)/chrysa/$(PROJECT_NAME)
+RUFF_CACHE_DIR      ?= $(_CACHE_BASE)/ruff
+MYPY_CACHE_DIR      ?= $(_CACHE_BASE)/mypy
+PYTHONPYCACHEPREFIX ?= $(_CACHE_BASE)/pycache
+PYTEST_ADDOPTS      ?= -p no:cacheprovider
+export UID GID RUFF_CACHE_DIR MYPY_CACHE_DIR PYTHONPYCACHEPREFIX PYTEST_ADDOPTS
+
 # ──────────────────────────────────────────────────────────────────────────────
 .DEFAULT_GOAL := help
 
