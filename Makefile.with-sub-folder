@@ -11,7 +11,7 @@ include $(shell find . -type f -name "*.[Mm]akefile" -not -path "*/\.*" -exec ec
 
 .DEFAULT_GOAL := help
 
-.PHONY: $(shell grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(shell find makefiles -name "*.Makefile" -type f) | sort | cut -d":" -f1 | tr "\n" " ")
+.PHONY: $(shell grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(shell find . (-name "*.Makefile" -or -name "*.mk") -type f) | sort | cut -d":" -f1 | tr "\n" " ")
 
 help: ## Display this help message
 	@echo "==================================================================="
