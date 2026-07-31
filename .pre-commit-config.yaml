@@ -1,0 +1,26 @@
+default_language_version:
+  python: python3.14
+fail_fast: false
+minimum_pre_commit_version: 4.1.0
+repos:
+- hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-json
+  - id: check-merge-conflict
+  - id: check-added-large-files
+  repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+- hooks:
+  - exclude: ^\.pre-commit-config\.yaml|\.claude/
+    id: detect-secrets
+  repo: https://github.com/Yelp/detect-secrets
+  rev: v1.5.0
+- hooks:
+  - exclude: ^\.github/workflows/|^GitVersion\.yml$
+    id: yaml-sorter
+  - id: json-sorter
+  - id: env-file-check
+  repo: https://github.com/chrysa/pre-commit-tools
+  rev: v0.1.1-97

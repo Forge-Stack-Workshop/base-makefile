@@ -1,0 +1,220 @@
+# makefile-tier: python-app
+# Makefile.python
+# Python project Makefile template with Docker Compose support
+# chrysa ecosystem standard — Python 3.14 target
+# Conforms to shared-standards EXECUTION_STANDARD.md §1 (python-app tier).
+#
+# Copy to your project root as `Makefile` and update the variables below.
+# For a pure library with no docker-compose.yml, use the `lib` tier instead
+# (reference: chrysa/django-pytest/Makefile).
+
+DOCKER_IMAGE    ?= your-project-image
+PROJECT_NAME    ?= your-project
+SOURCE_DIR      ?= src
+TESTS_DIR       ?= tests
+REPORTS_DIR     := reports
+PYTHON          := python3
+DC              := docker compose
+DC_RUN          := $(DC) run --rm app
+
+# ── Artifact isolation (shared-standards: no caches/venv in the tree) ──────────
+# Host UID/GID: docker-compose services that bind-mount the repo MUST run as
+# `user: "$${UID:-1000}:$${GID:-1000}"` (never root) so nothing written into the
+# mount is root-owned. Cache dirs are redirected OUT of the repo tree for both
+# host-run tools and containers (compose passes these through the environment).
+UID                 ?= $(shell id -u)
+GID                 ?= $(shell id -g)
+_CACHE_BASE         ?= $(if $(XDG_CACHE_HOME),$(XDG_CACHE_HOME),$(HOME)/.cache)/chrysa/$(PROJECT_NAME)
+RUFF_CACHE_DIR      ?= $(_CACHE_BASE)/ruff
+MYPY_CACHE_DIR      ?= $(_CACHE_BASE)/mypy
+PYTHONPYCACHEPREFIX ?= $(_CACHE_BASE)/pycache
+PYTEST_ADDOPTS      ?= -p no:cacheprovider
+export UID GID RUFF_CACHE_DIR MYPY_CACHE_DIR PYTHONPYCACHEPREFIX PYTEST_ADDOPTS
+
+# ──────────────────────────────────────────────────────────────────────────────
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## Show available targets
+	@grep -E '^[a-zA-Z_-]+:.*?##' $(MAKEFILE_LIST) \
+		| awk 'BEGIN {FS = ":.*?##"}; {printf "  %-25s %s\n", $$1, $$2}'
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Setup & Install
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: install
+install: ## Install project dependencies (local)
+	$(PYTHON) -m pip install -e ".[tests,lint]"
+
+.PHONY: install-dev
+install-dev: ## Install all dev dependencies (local)
+	$(PYTHON) -m pip install -e ".[tests,lint,dev]"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Dev
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: dev
+dev: ## Start the dev stack with hot-reload (Ctrl+C to stop)
+	$(DC) up --build
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Build
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: build
+build: ## Build Docker image (no cache)
+	$(DC) build --no-cache
+
+.PHONY: build-cache
+build-cache: ## Build Docker image (with cache)
+	$(DC) build
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Clean
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: clean
+clean: ## Remove build artifacts and caches
+	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".mypy_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	rm -rf build/ dist/ $(REPORTS_DIR)/
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Lint & Format
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: lint
+lint: ## Run ruff check (linter)
+	$(DC_RUN) ruff check $(SOURCE_DIR) $(TESTS_DIR)
+
+.PHONY: format
+format: ## Run ruff format (formatter)
+	$(DC_RUN) ruff format $(SOURCE_DIR) $(TESTS_DIR)
+
+.PHONY: typecheck
+typecheck: ## Run mypy type checking
+	$(DC_RUN) mypy $(SOURCE_DIR)
+
+.PHONY: lint-all
+lint-all: lint typecheck ## Run all lint and type checks
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Tests
+# ──────────────────────────────────────────────────────────────────────────────
+$(REPORTS_DIR):
+	mkdir -p $(REPORTS_DIR)
+
+.PHONY: test
+test: ## Run unit tests in Docker (fast, no coverage)
+	$(DC_RUN) pytest $(TESTS_DIR) -v
+
+.PHONY: test-cov
+test-cov: $(REPORTS_DIR) ## Run tests with coverage in Docker (writes coverage.xml)
+	$(DC_RUN) pytest $(TESTS_DIR) \
+		--cov=$(SOURCE_DIR) \
+		--cov-report=term-missing \
+		--cov-report=xml:$(REPORTS_DIR)/coverage.xml \
+		--junitxml=$(REPORTS_DIR)/test-results.xml \
+		-v
+
+.PHONY: docker-test
+docker-test: test-cov ## Run the CI-compatible test suite in Docker (alias for test-cov)
+
+.PHONY: test-local
+test-local: $(REPORTS_DIR) ## Run tests locally without Docker (IDE convenience only)
+	pytest $(TESTS_DIR) \
+		--cov=$(SOURCE_DIR) \
+		--cov-report=term-missing \
+		--cov-report=xml:$(REPORTS_DIR)/coverage.xml \
+		-v
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Pre-commit
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: pre-commit
+pre-commit: ## Run pre-commit hooks on all files
+	pre-commit run --all-files
+
+.PHONY: pre-commit-update
+pre-commit-update: ## Update pre-commit hooks to latest versions
+	pre-commit autoupdate --bleeding-edge
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Docker Compose helpers
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: docker-up
+docker-up: ## Start all services (detached)
+	$(DC) up -d
+
+.PHONY: docker-down
+docker-down: ## Stop all services
+	$(DC) down
+
+.PHONY: logs
+logs: ## Tail service logs
+	$(DC) logs -f
+
+.PHONY: shell
+shell: ## Open a shell in the app container
+	$(DC_RUN) /bin/bash
+
+.PHONY: ps
+ps: ## Show running containers
+	$(DC) ps
+
+# ──────────────────────────────────────────────────────────────────────────────
+# CI targets (run without Docker Compose in CI runners)
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: ci-lint
+ci-lint: ## CI: run ruff check
+	ruff check $(SOURCE_DIR) $(TESTS_DIR)
+
+.PHONY: ci-test
+ci-test: $(REPORTS_DIR) ## CI: run pytest with coverage
+	pytest $(TESTS_DIR) \
+		--cov=$(SOURCE_DIR) \
+		--cov-report=xml:$(REPORTS_DIR)/coverage.xml \
+		--junitxml=$(REPORTS_DIR)/test-results.xml
+
+.PHONY: ci
+ci: ci-lint ci-test ## CI: run all checks
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Quality gate (regression baseline — see EXECUTION_STANDARD.md §12)
+# ──────────────────────────────────────────────────────────────────────────────
+.PHONY: quality-gate-baseline
+quality-gate-baseline: ## Capture the quality-gate baseline after a clean run
+	$(PYTHON) scripts/quality_gate.py baseline
+
+.PHONY: quality-gate-verify
+quality-gate-verify: ## Verify current metrics against the baseline
+	$(PYTHON) scripts/quality_gate.py verify
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Docs (drift-checked)
+# ──────────────────────────────────────────────────────────────────────────────
+# Generated docs are build artifacts: regenerate them mechanically, then fail if
+# the committed copy drifts. The CI composite action
+# (chrysa/github-actions/doc-drift) and the pre-commit `docs-drift-gate` hook
+# rely on these target names. Fill in `docs-code` (and optionally
+# `docs-screenshots`) with this project's generators — keep them deterministic
+# (sorted output, pinned hashes) so the diff stays quiet.
+DOCS_PATHS ?= docs/
+
+.PHONY: docs-code
+docs-code: ## Regenerate code-derived docs — TODO: add this project's generators
+	@echo "TODO: implement 'docs-code' to write deterministic docs under $(DOCS_PATHS)" >&2
+	@exit 1
+
+.PHONY: docs
+docs: docs-code ## Regenerate every generated doc (add screenshot deps as needed)
+
+.PHONY: docs-code-check
+docs-code-check: docs-code ## Fail if code-derived docs drift (pre-commit pre-push)
+	@git diff --exit-code -- $(DOCS_PATHS) \
+		|| { echo "Code-derived docs are stale — run 'make docs-code' and commit." >&2; exit 1; }
+
+.PHONY: docs-check
+docs-check: docs ## Fail if any generated doc drifts (CI)
+	@git diff --exit-code -- $(DOCS_PATHS) \
+		|| { echo "Generated docs are stale — run 'make docs' and commit." >&2; exit 1; }

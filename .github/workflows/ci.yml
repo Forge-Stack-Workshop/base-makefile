@@ -1,0 +1,58 @@
+'on':
+  pull_request:
+    branches:
+    - main
+  push:
+    branches:
+    - main
+jobs:
+  pre-commit:
+    name: Pre-commit checks
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - uses: actions/setup-python@v7.0.0
+      with:
+        python-version: '3.14'
+    - name: Install pre-commit
+      run: pip install pre-commit
+      shell: bash
+    - name: Run pre-commit
+      env:
+        SKIP: no-commit-to-branch
+      run: pre-commit run --all-files
+      shell: bash
+  validate-makefile:
+    name: Validate Makefiles
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - name: Check Makefile syntax (basic)
+      run: 'make -n -f Makefile.basic help 2>&1 | head -10 || true
+
+        '
+      shell: bash
+    - name: Check Makefile syntax (with-sub-folder)
+      run: 'make -n -f Makefile.with-sub-folder help 2>&1 | head -10 || true
+
+        '
+      shell: bash
+  version:
+    name: Compute version
+    outputs:
+      major: ${{ steps.gitversion.outputs.major }}
+      minor: ${{ steps.gitversion.outputs.minor }}
+      patch: ${{ steps.gitversion.outputs.patch }}
+      semver: ${{ steps.gitversion.outputs.fullSemVer }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7.0.1
+      with:
+        fetch-depth: 0
+    - id: gitversion
+      name: Compute GitVersion
+      uses: chrysa/github-actions/gitversion@v1.4.4
+    - name: Show version
+      run: echo "Version ${{ steps.gitversion.outputs.fullSemVer }}"
+      shell: bash
+name: CI

@@ -1,0 +1,84 @@
+{
+  "autoCompact": true,
+  "autoCompactThreshold": 0.85,
+  "effortLevel": "medium",
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "command": "notify-send 'Claude Code' 'En attente de ton input' 2>/dev/null || true",
+            "name": "notify-user-input",
+            "timeout": 3000,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/verifiable-thresholds.cjs",
+            "name": "verifiable-thresholds",
+            "timeout": 10000,
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit|MultiEdit"
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "command": "~/.claude/hooks/pre-compact.sh",
+            "timeout": 5000,
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/secret-scanner.cjs",
+            "name": "secret-scanner",
+            "timeout": 10000,
+            "type": "command"
+          },
+          {
+            "command": "node .claude/hooks/circuit-breaker.cjs",
+            "name": "circuit-breaker",
+            "timeout": 5000,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "CMD=$(python3 -c \"import json,sys; d=json.load(sys.stdin); print(d.get('tool_input',d).get('command',''))\" 2>/dev/null || true); case \"$CMD\" in *grep*|*rg\\ *|*ripgrep*|*find\\ *|*fd\\ *|*ack\\ *|*ag\\ *)   [ -f graphify-out/graph.json ] &&   echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"graphify: knowledge graph at graphify-out/. For focused questions, run `graphify query \\\"<question>\\\"` (scoped subgraph, usually much smaller than GRAPH_REPORT.md) instead of grepping raw files. Read GRAPH_REPORT.md only for broad architecture context.\"}}'   || true ;; esac",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/frustration-detection.cjs",
+            "name": "frustration-detection",
+            "timeout": 5000,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ]
+  }
+}

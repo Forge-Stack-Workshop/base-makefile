@@ -1,0 +1,101 @@
+#!make
+# makefile-tier: infra   # set for your repo: lib | python-app | fullstack | infra
+ifneq (,)
+	$(error This Makefile requires GNU Make)
+endif
+
+# ─── Variables ────────────────────────────────────────────────────────────────
+PROJECT_NAME ?= My Project
+
+include $(shell find . -type f -name "*.[Mm]akefile" -not -path "*/\.*" -exec echo " {}" \;)
+
+.DEFAULT_GOAL := help
+
+.PHONY: $(shell grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(shell find . (-name "*.Makefile" -or -name "*.mk") -type f) | sort | cut -d":" -f1 | tr "\n" " ")
+
+help: ## Display this help message
+	@echo "==================================================================="
+	@echo "  $(PROJECT_NAME)"
+	@echo "==================================================================="
+	@echo ""
+	@echo "Available commands:"
+	@echo ""
+	@for file in  $(shell find . -type f -name "*.[Mm]akefile" -not -path "*/\.*" -exec echo " {}" \; 2>/dev/null | sort); do \
+		category=$$(basename $$file .Makefile); \
+		case $$category in \
+			gobal_rules) continue ;; \
+			development) icon="⚡" ;; \
+			docker)      icon="🐳" ;; \
+			quality)     icon="🔍" ;; \
+			tests)       icon="🧪" ;; \
+			tools)       icon="🔧" ;; \
+			project)     icon="🚀" ;; \
+			ci|cicd)     icon="⚙️"  ;; \
+			lint)        icon="🧹" ;; \
+			secrets)     icon="🔐" ;; \
+			*)           icon="📌" ;; \
+		esac; \
+		echo "$$icon $$(echo $$category | tr '[:lower:]' '[:upper:]'):"; \
+		grep -E '^[a-zA-Z_-]+(\([^)]*\))?:.*?## .*$$' $$file 2>/dev/null | sort | \
+			awk 'BEGIN {FS = ":.*?## "}; { \
+				cmd = $$1; \
+				desc = $$2; \
+				if (match(cmd, /\([^)]+\)/)) { \
+					args = substr(cmd, RSTART+1, RLENGTH-2); \
+					gsub(/\([^)]+\)/, "", cmd); \
+					printf "  \033[36m%-20s\033[0m \033[33m%-15s\033[0m %s\n", cmd, args, desc; \
+				} else { \
+					printf "  \033[36m%-20s\033[0m \033[33m%-15s\033[0m %s\n", cmd, "", desc; \
+				} \
+			}'; \
+		echo ""; \
+	done
+	@echo "📝 EXAMPLES:"
+	@echo "  make dev              # Start development server"
+	@echo "  make build       # Build for production"
+	@echo "  make format           # Format code"
+	@echo "  make test             # Run tests"
+	@echo ""
+	@echo "Environment Variables:"
+	@echo "  SERVICE=$(SERVICE)"
+	@echo ""
+	@echo "==================================================================="
+
+help-%: ## Show detailed help for a specific command
+	@echo "Showing help for: $*"
+	@grep -A 5 -B 2 "^$*:" $(shell find makefiles -name "*.Makefile" -type f) || echo "Command '$*' not found"
+
+# ─── Standard targets (shared-standards EXECUTION_STANDARD.md §1) ──────────────
+# Stubs so a fresh scaffold passes `makefile-check` (which reads only this root
+# file, not the included makefiles/). Move each into the matching
+# makefiles/<category>.Makefile and delete it here as you wire the real command.
+
+install: ## Install dependencies
+	@echo "TODO: install dependencies"
+
+lint: ## Run linter
+	@echo "TODO: run linter"
+
+format: ## Auto-format code
+	@echo "TODO: format code"
+
+typecheck: ## Run static type checker
+	@echo "TODO: typecheck"
+
+test: ## Run unit tests
+	@echo "TODO: run tests"
+
+test-cov: ## Run tests with coverage (writes coverage.xml)
+	@echo "TODO: run tests with coverage"
+
+build: ## Build production artefact
+	@echo "TODO: build"
+
+dev: ## Start dev server / watch mode
+	@echo "TODO: dev"
+
+clean: ## Remove generated artefacts and caches
+	@echo "TODO: clean"
+
+pre-commit: ## Run pre-commit hooks on all files
+	@pre-commit run --all-files
