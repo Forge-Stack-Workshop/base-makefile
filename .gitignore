@@ -16,5 +16,9 @@ Thumbs.db
 .pre-commit-cache/
 .gitnexus
 
+# Claude local settings + transient hook temp files
+.claude/settings.local.json
+.claude/*.tmp.*
+
 # CodeGraph (local index — never commit)
 .codegraph/
