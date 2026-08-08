@@ -36,8 +36,18 @@ export UID GID RUFF_CACHE_DIR MYPY_CACHE_DIR PYTHONPYCACHEPREFIX PYTEST_ADDOPTS
 
 .PHONY: help
 help: ## Show available targets
-	@grep -E '^[a-zA-Z_-]+:.*?##' $(MAKEFILE_LIST) \
-		| awk 'BEGIN {FS = ":.*?##"}; {printf "  %-25s %s\n", $$1, $$2}'
+	@grep -hE '^[a-zA-Z_-]+(\([^)]*\))?:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
+		awk 'BEGIN {FS = ":.*?## "}; { \
+			cmd = $$1; \
+			desc = $$2; \
+			if (match(cmd, /\([^)]+\)/)) { \
+				args = substr(cmd, RSTART+1, RLENGTH-2); \
+				gsub(/\([^)]+\)/, "", cmd); \
+				printf "  \033[36m%-20s\033[0m \033[33m%-15s\033[0m %s\n", cmd, args, desc; \
+			} else { \
+				printf "  \033[36m%-20s\033[0m \033[33m%-15s\033[0m %s\n", cmd, "", desc; \
+			} \
+		}'
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Setup & Install
