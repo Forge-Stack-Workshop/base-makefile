@@ -15,29 +15,46 @@ jobs:
       with:
         fetch-depth: 0
     - id: gitversion
+      if: github.ref_type != 'tag'
       name: Compute GitVersion
       uses: chrysa/github-actions/gitversion@v1.4.4
-    - env:
+    - name: Tag and release
+      env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      if: github.ref == 'refs/heads/main'
-      name: Create tag
-      run: 'VERSION="v${{ steps.gitversion.outputs.fullSemVer }}"
+        REF_NAME: ${{ github.ref_name }}
+        REF_TYPE: ${{ github.ref_type }}
+        SEMVER: ${{ steps.gitversion.outputs.fullSemVer }}
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        # Resolve the target version from the trigger:
+        #   - tag push (refs/tags/v*): use the tag name as-is
+        #   - branch push (main): use the GitVersion-computed semver
+        if [ "$REF_TYPE" = tag ]; then
+          VERSION="$REF_NAME"
+        else
+          VERSION="v$SEMVER"
+        fi
 
         git config user.name "github-actions[bot]"
-
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
-        git tag -f "$VERSION"
+        # Create the tag only if absent. A token-pushed tag does NOT retrigger
+        # workflows, so the release must be created here in the same run rather
+        # than in a tag-triggered run that never fires (the previous bug). No
+        # force-push: released tags are immutable.
+        if git rev-parse "$VERSION" >/dev/null 2>&1; then
+          echo "Tag $VERSION already exists — not re-tagging."
+        else
+          git tag "$VERSION"
+          git push origin "$VERSION"
+        fi
 
-        git push origin "$VERSION" --force
-
-        '
-      shell: bash
-    - env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      if: startsWith(github.ref, 'refs/tags/v')
-      name: Create GitHub release
-      run: "gh release create \"${{ github.ref_name }}\" \\\n    --title \"Release\
-        \ ${{ github.ref_name }}\" \\\n    --generate-notes\n"
-      shell: bash
+        # Idempotent release creation.
+        if gh release view "$VERSION" >/dev/null 2>&1; then
+          echo "Release $VERSION already exists — skipping."
+        else
+          gh release create "$VERSION" --title "Release $VERSION" --generate-notes
+        fi
 name: CD
