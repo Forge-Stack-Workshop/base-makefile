@@ -38,7 +38,10 @@ The `help` target automatically groups commands by category based on the filenam
 | `ci.Makefile` / `cicd.Makefile` | ⚙️ | CI/CICD |
 | `lint.Makefile` | 🧹 | LINT |
 | `secrets.Makefile` | 🔐 | SECRETS |
+| `global_rules.Makefile` | *(hidden)* | *(skipped in help)* |
 | *(other)* | 📌 | *(name)* |
+
+A sample `makefiles/` directory ships with the repo so `make -f Makefile.with-sub-folder help` works out of the box and doubles as the CI smoke-test fixture.
 
 Override the project name:
 
