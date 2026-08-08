@@ -19,7 +19,7 @@ help: ## Display this help message
 	@echo "Available commands:"
 	@echo ""
 	@for makefile in $(shell echo $(MAKEFILE_LIST) | sort); do \
-		grep -E '^[a-zA-Z_-]+([^)]*)?:.*?## .*$$' $$makefile 2>/dev/null | sort | \
+		grep -E '^[a-zA-Z_-]+(\([^)]*\))?:.*?## .*$$' $$makefile 2>/dev/null | sort | \
 			awk 'BEGIN {FS = ":.*?## "}; { \
 				cmd = $$1; \
 				desc = $$2; \

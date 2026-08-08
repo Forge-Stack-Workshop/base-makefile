@@ -2,53 +2,52 @@
 
 ## Role
 
-Collection de templates Makefile réutilisables pour les projets chrysa / Forge-Stack-Workshop.
-
+Collection of reusable Makefile templates for chrysa / Forge-Stack-Workshop projects.
 
 ## Language Rules
 
 - Language: English — all code, comments, documentation, instructions, and configuration files must be in English.
-## Templates disponibles
 
-| Fichier | Usage |
+## Available templates
+
+| File | Usage |
 |---------|-------|
-| `Makefile.basic` | Projet simple mono-fichier |
-| `Makefile.with-sub-folder` | Projet multi-fichier avec `makefiles/` (catégories auto-détectées) |
-| `Makefile.python` | Profil Python avec cibles lint/test/format/venv |
+| `Makefile.basic` | Simple single-file project |
+| `Makefile.with-sub-folder` | Multi-file project with `makefiles/` (auto-detected categories) |
+| `Makefile.python` | Python profile with lint/test/format/venv targets |
 
-## Convention obligatoire
+## Required convention
 
 ```makefile
-target: ## Description courte de la cible
-	@commande
+target: ## Short description of the target
+	@command
 ```
 
-- Toutes les commandes préfixées par `@` (pas d'écho shell).
-- `## Description` après le nom de cible = apparaît dans `make help`.
+- All commands prefixed with `@` (no shell echo).
+- `## Description` after the target name = shown in `make help`.
 
-## Structure `Makefile.with-sub-folder`
+## `Makefile.with-sub-folder` structure
 
-Placer les fichiers `*.Makefile` dans `makefiles/`. La cible `help` groupe par nom de fichier :
+Place `*.Makefile` files in `makefiles/`. The `help` target groups by filename:
 
-| Fichier | Icône | Catégorie |
+| File | Icon | Category |
 |---------|-------|-----------|
 | `development.Makefile` | ⚡ | DEVELOPMENT |
 | `docker.Makefile` | 🐳 | DOCKER |
 | `quality.Makefile` | 🔍 | QUALITY |
 | `tests.Makefile` | 🧪 | TESTS |
 | `ci.Makefile` | ⚙️ | CI/CICD |
+| `global_rules.Makefile` | *(hidden)* | *(skipped in help)* |
+
+A sample `makefiles/` directory is committed; `scripts/smoke-test.sh` dry-runs every template's `help` and asserts no stderr (wired into CI `validate-makefile`).
 
 ## CI / Standards
 
-- CI workflow : `.github/workflows/ci.yml`
-- pre-commit : `.pre-commit-config.yaml`
-- Versioning automatique : GitVersion (`GitVersion.yml`)
+- CI workflow: `.github/workflows/ci.yml`
+- pre-commit: `.pre-commit-config.yaml`
+- Automatic versioning: GitVersion (`GitVersion.yml`)
 
-## PRs ouvertes
-
-- #18 (dependabot) : actions/checkout v4 → v6 — à merger
-
-## Liens
+## Links
 
 - [GitHub](https://github.com/Forge-Stack-Workshop/base-makefile)
 - [Notion — base-makefile](https://www.notion.so/base-makefile-Makefile-standard-r-utilisable-33959293e35e812d9237fad7830ac941)
