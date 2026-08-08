@@ -2,9 +2,11 @@
   pull_request:
     branches:
     - main
+    - develop
   push:
     branches:
     - main
+    - develop
 jobs:
   pre-commit:
     name: Pre-commit checks
