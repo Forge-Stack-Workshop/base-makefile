@@ -27,15 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7.0.1
-    - name: Check Makefile syntax (basic)
-      run: 'make -n -f Makefile.basic help 2>&1 | head -10 || true
-
-        '
-      shell: bash
-    - name: Check Makefile syntax (with-sub-folder)
-      run: 'make -n -f Makefile.with-sub-folder help 2>&1 | head -10 || true
-
-        '
+    - name: Smoke-test templates
+      run: ./scripts/smoke-test.sh
       shell: bash
   version:
     name: Compute version
