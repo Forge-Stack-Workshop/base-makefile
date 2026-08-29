@@ -1,7 +1,7 @@
 # makefile-tier: python-app
 # Makefile.python
 # Python project Makefile template with Docker Compose support
-# chrysa ecosystem standard — Python 3.14 target
+# Forge-Stack-Workshop ecosystem standard — Python 3.14 target
 # Conforms to shared-standards EXECUTION_STANDARD.md §1 (python-app tier).
 #
 # Copy to your project root as `Makefile` and update the variables below.
@@ -24,7 +24,7 @@ DC_RUN          := $(DC) run --rm app
 # host-run tools and containers (compose passes these through the environment).
 UID                 ?= $(shell id -u)
 GID                 ?= $(shell id -g)
-_CACHE_BASE         ?= $(if $(XDG_CACHE_HOME),$(XDG_CACHE_HOME),$(HOME)/.cache)/chrysa/$(PROJECT_NAME)
+_CACHE_BASE         ?= $(if $(XDG_CACHE_HOME),$(XDG_CACHE_HOME),$(HOME)/.cache)/$(PROJECT_NAME)
 RUFF_CACHE_DIR      ?= $(_CACHE_BASE)/ruff
 MYPY_CACHE_DIR      ?= $(_CACHE_BASE)/mypy
 PYTHONPYCACHEPREFIX ?= $(_CACHE_BASE)/pycache
@@ -204,9 +204,8 @@ quality-gate-verify: ## Verify current metrics against the baseline
 # Docs (drift-checked)
 # ──────────────────────────────────────────────────────────────────────────────
 # Generated docs are build artifacts: regenerate them mechanically, then fail if
-# the committed copy drifts. The CI composite action
-# (vendored doc-drift action) and the pre-commit `docs-drift-gate` hook
-# rely on these target names. Fill in `docs-code` (and optionally
+# the committed copy drifts. The CI doc-drift check and the pre-commit
+# `docs-drift-gate` hook rely on these target names. Fill in `docs-code` (and optionally
 # `docs-screenshots`) with this project's generators — keep them deterministic
 # (sorted output, pinned hashes) so the diff stays quiet.
 DOCS_PATHS ?= docs/
