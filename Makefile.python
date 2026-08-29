@@ -6,7 +6,7 @@
 #
 # Copy to your project root as `Makefile` and update the variables below.
 # For a pure library with no docker-compose.yml, use the `lib` tier instead
-# (reference: chrysa/django-pytest/Makefile).
+# (reference: internal django-pytest Makefile).
 
 DOCKER_IMAGE    ?= your-project-image
 PROJECT_NAME    ?= your-project
@@ -205,7 +205,7 @@ quality-gate-verify: ## Verify current metrics against the baseline
 # ──────────────────────────────────────────────────────────────────────────────
 # Generated docs are build artifacts: regenerate them mechanically, then fail if
 # the committed copy drifts. The CI composite action
-# (chrysa/github-actions/doc-drift) and the pre-commit `docs-drift-gate` hook
+# (vendored doc-drift action) and the pre-commit `docs-drift-gate` hook
 # rely on these target names. Fill in `docs-code` (and optionally
 # `docs-screenshots`) with this project's generators — keep them deterministic
 # (sorted output, pinned hashes) so the diff stays quiet.
