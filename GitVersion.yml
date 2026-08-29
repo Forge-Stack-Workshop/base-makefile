@@ -4,28 +4,30 @@ mode: ContinuousDelivery
 branches:
   main:
     regex: ^main$
-    tag: ''
+    label: ''
     increment: Patch
-    prevent-increment-of-merged-branch-version: true
+    prevent-increment:
+      of-merged-branch: true
     track-merge-target: false
-    is-mainline: true
+    is-main-branch: true
   feature:
     regex: ^features?[/-]
-    tag: alpha
+    label: alpha
     increment: Minor
     source-branches:
       - main
   fix:
     regex: ^(bugfix|hotfix|fix)[/-]
-    tag: beta
+    label: beta
     increment: Patch
     source-branches:
       - main
   release:
     regex: ^releases?[/-]
-    tag: rc
+    label: rc
     increment: Minor
-    prevent-increment-of-merged-branch-version: true
+    prevent-increment:
+      of-merged-branch: true
     track-merge-target: true
     source-branches:
       - main
