@@ -17,7 +17,7 @@ jobs:
     - id: gitversion
       if: github.ref_type != 'tag'
       name: Compute GitVersion
-      uses: chrysa/github-actions/gitversion@v1.8.1
+      uses: chrysa/github-actions/gitversion@v1.8.2
     - name: Tag and release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
