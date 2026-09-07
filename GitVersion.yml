@@ -1,6 +1,9 @@
 assembly-versioning-scheme: MajorMinorPatch
 assembly-file-versioning-scheme: MajorMinorPatch
-mode: ContinuousDelivery
+# GitVersion 6 config schema (matches gittools/actions@v4.4.2 / versionSpec 6.x).
+# v6 renames: mode ContinuousDelivery -> ManualDeployment, `tag` -> `label`,
+# `is-mainline` -> `is-main-branch`. See BREAKING_CHANGES.md.
+mode: ManualDeployment
 branches:
   main:
     regex: ^main$
