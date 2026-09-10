@@ -1,31 +1,34 @@
 #!/usr/bin/env bash
-# Smoke test for the Makefile templates.
-# Each template's `help` target must dry-run cleanly: exit 0 AND emit no stderr.
-# A shell syntax error inside a $(shell ...) or recipe prints to stderr while make
-# still exits 0 — so we check stderr, not just the exit code. This is what catches
-# the class of bug that previously shipped (unescaped parens in .PHONY).
-set -euo pipefail
+# Smoke-test every profile and example Makefile: dry-run its `help` target and
+# assert a clean exit with no stderr. A shell syntax error inside a $(shell ...)
+# or a recipe surfaces on stderr even when make's exit code is 0, so we check both.
+set -u
 
+repo_root="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$repo_root"
 fail=0
 
+# check <label> <make-args...> — run from an optional working dir set by caller.
 check() {
-	local template="$1"
-	local stderr rc
-	stderr="$(make -n -f "$template" help 2>&1 >/dev/null)" && rc=0 || rc=$?
+	label="$1"; shift
+	stderr="$("$@" 2>&1 >/dev/null)"; rc=$?
 	if [ "$rc" -ne 0 ]; then
-		echo "FAIL: $template — make exited $rc"
-		fail=1
+		echo "FAIL: $label — make exited $rc"; echo "$stderr" | sed 's/^/    /'; fail=1
 	elif [ -n "$stderr" ]; then
-		echo "FAIL: $template — stderr not empty:"
-		echo "$stderr" | sed 's/^/    /'
-		fail=1
+		echo "FAIL: $label — stderr not empty:"; echo "$stderr" | sed 's/^/    /'; fail=1
 	else
-		echo "OK:   $template"
+		echo "OK:   $label"
 	fi
 }
 
-check Makefile.basic
-check Makefile.with-sub-folder
-check Makefile.python
+# Composable profiles: included from repo root (their `include lib/...` is CWD-relative).
+for profile in profiles/*.Makefile; do
+	check "$profile" make -f "$profile" --dry-run help
+done
+
+# Flat examples: the with-sub-folder demo scans its own dir, so run each from examples/.
+for example in Makefile.basic Makefile.python Makefile.with-sub-folder; do
+	check "examples/$example" make -C examples -f "$example" --dry-run help
+done
 
 exit "$fail"
