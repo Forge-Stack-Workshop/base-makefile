@@ -5,7 +5,7 @@
 set -u
 
 repo_root="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$repo_root"
+cd "$repo_root" || exit 1
 fail=0
 
 # check <label> <make-args...> — run from an optional working dir set by caller.
