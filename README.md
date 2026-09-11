@@ -1,124 +1,132 @@
 # base-makefile
 
-[![CI](https://github.com/Forge-Stack-Workshop/base-makefile/actions/workflows/ci.yml/badge.svg)](https://github.com/Forge-Stack-Workshop/base-makefile/actions/workflows/ci.yml)
-[![CD](https://github.com/Forge-Stack-Workshop/base-makefile/actions/workflows/cd.yml/badge.svg)](https://github.com/Forge-Stack-Workshop/base-makefile/actions/workflows/cd.yml)
-[![Latest Release](https://img.shields.io/github/v/release/Forge-Stack-Workshop/base-makefile)](https://github.com/Forge-Stack-Workshop/base-makefile/releases/latest)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Forge-Stack-Workshop_base-makefile&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Forge-Stack-Workshop_base-makefile)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
-[![GitVersion](https://img.shields.io/badge/versioning-GitVersion-blue)](https://gitversion.net/)
+Composable Make library for Forge-Stack / chrysa projects. One shared core,
+small single-purpose bricks, and ready-made profiles you drop into a project as
+its root `Makefile`. Flat single-file templates are kept under `examples/` for
+projects that don't want the `lib/` layout.
 
-Generic, reusable Makefile templates for any project.
+## Layout
 
-## Templates
-
-### `Makefile.basic`
-
-Single-file Makefile. Iterates over `$(MAKEFILE_LIST)` to display the `help` target.
-
-Override the project name at call time or at the top of the file:
-
-```bash
-make help PROJECT_NAME="my-project"
+```
+lib/                          the library (copy into your project)
+  common/   00_variables · 01_functions · 02_help · lifecycle   (core)
+  python/   quality · tests · deps · clean
+  quality/  precommit · coverage-gate                (host-run hooks / coverage floor)
+  js/       node                                     (npm/pnpm/yarn)
+  unity/    unity                                    (Unity CLI: tests + build)
+  docker/   compose · runner · build                 (runner = container mode)
+  django/   manage
+  db/       alembic                                  (SQLAlchemy/FastAPI migrations)
+  infra/    helm · terraform
+  docs/     sphinx
+  git/      github
+  ops/      backup · docs · release                  (drift-checked docs / changelog+tag)
+profiles/                     pick one, rename to Makefile
+  micro.Makefile                common + python + precommit + git      flat Python tool/lib
+  micro-container.Makefile      micro, all tools in a container        containerized Python
+  frontend.Makefile             common + js + precommit + git          Node/Vite front-end
+  django.Makefile               + docker + django                      Dockerized Django app
+  fastapi.Makefile              + docker + alembic                     Dockerized FastAPI service
+  fullstack.Makefile            django + node + ops                    Django + Node monorepo
+  fullstack-container.Makefile  fullstack, all tools in a container    containerized monorepo
+  unity.Makefile                common + unity + precommit + git       Unity project
+  infra.Makefile                common + helm + terraform              Helm/Terraform infra
+examples/                     standalone flat templates (no lib/)
+  Makefile.basic · Makefile.python · Makefile.with-sub-folder · makefiles/
+scripts/install.sh            wire the library into a project (see below)
+scripts/smoke-test.sh         dry-runs every profile + example (CI gate)
 ```
 
-### `Makefile.with-sub-folder`
+## Install into a project
 
-Multi-file variant. Requires `*.Makefile` files placed in a `makefiles/` sub-folder.
-
-The `help` target automatically groups commands by category based on the filename:
-
-| Filename | Icon | Category |
-|---|---|---|
-| `development.Makefile` | ⚡ | DEVELOPMENT |
-| `docker.Makefile` | 🐳 | DOCKER |
-| `quality.Makefile` | 🔍 | QUALITY |
-| `tests.Makefile` | 🧪 | TESTS |
-| `tools.Makefile` | 🔧 | TOOLS |
-| `project.Makefile` | 🚀 | PROJECT |
-| `ci.Makefile` / `cicd.Makefile` | ⚙️ | CI/CICD |
-| `lint.Makefile` | 🧹 | LINT |
-| `secrets.Makefile` | 🔐 | SECRETS |
-| `global_rules.Makefile` | *(hidden)* | *(skipped in help)* |
-| *(other)* | 📌 | *(name)* |
-
-A sample `makefiles/` directory ships with the repo so `make -f Makefile.with-sub-folder help` works out of the box and doubles as the CI smoke-test fixture.
-
-Override the project name:
+One command wires the whole ecosystem in — copies `lib/` and the chosen profile
+(renamed `Makefile`) into the target:
 
 ```bash
-make help PROJECT_NAME="my-project"
+scripts/install.sh --profile django --dest /path/to/project
+scripts/install.sh --list                 # list profiles
+scripts/install.sh -p micro-container -d . # into the current dir
 ```
 
-### `Makefile.python`
+Or do it by hand:
 
-Python-oriented template with Docker Compose support. Covers `install`, `lint`, `format`, `typecheck`, `test`, `build`, `pre-commit`, and Docker helpers.
-
-See [`Makefile.python`](Makefile.python) for the full template.
+1. Copy `lib/` to your project root.
+2. Copy one profile as `Makefile`: `cp profiles/django.Makefile ./Makefile`.
+3. Set project overrides at the top of that `Makefile`, before the includes:
+   ```make
+   PROJECT_NAME   := my-api
+   SRC_DIR        := myapp
+   DJANGO_SERVICE := web     # run manage.py inside this compose service
+   ```
+4. `make` → auto-generated help, grouped by category.
 
 ## Conventions
 
-- All recipe lines must be prefixed with `@` to suppress shell echo.
-- Add `## Description` after the target name to include it in the `help` output.
+- **Help is generated** from `target: ## Description => [var={what}]` comments.
+  Undocumented targets are hidden. `make help-<target>` shows a definition.
+- **Everything is overridable** on the command line: `make test PYTEST_ARGS="-k foo"`,
+  `make lint files=src/`, `make PYTHON=python3.14 ci`, `make PKG=pnpm web-build`.
+- **Required variables** use the `check-defined-<var>` prerequisite; a missing
+  value fails with a clear message instead of running a broken command.
+- **Destructive actions** call `confirm_destructive`; pass `CONFIRM=yes` to skip
+  the prompt in CI.
+- **Include order matters**: `00_variables` → `01_functions` → category bricks →
+  `02_help` (last, so it sees every target). Profiles already do this.
+- **One `.PHONY` per file**: each brick declares all its phony targets in a
+  single `.PHONY` line at the top; `common/02_help` also auto-declares every
+  documented target across included bricks.
 
-```makefile
-build: ## Build the project
-        @docker build -t myapp .
+## Host vs container execution
+
+Every tool call in the Python/JS bricks is prefixed with `$(RUN)`. On the host
+`RUN` is empty. Including `lib/docker/runner.Makefile` sets it to
+`docker compose run --rm --user <uid:gid> $(RUN_SERVICE)`, so the same targets
+run inside a container. The `*-container` profiles do this for you:
+
+```bash
+make RUN_SERVICE=app test      # pytest runs inside the "app" service
 ```
 
-## Non-root `package.json` projects
+pre-commit stays on the host (it manages its own isolated hook environments).
 
-When the app lives in a subdirectory (e.g. `app/`) rather than the repo root, CI workflows
-must set the working directory explicitly:
+## Composing your own profile
 
-```yaml
-# .github/workflows/ci.yml
-- name: Install
-  working-directory: app
-  run: npm ci
-
-- name: Build
-  working-directory: app
-  run: npm run build
+```make
+include lib/common/00_variables.Makefile
+include lib/common/01_functions.Makefile
+include lib/python/quality.Makefile
+include lib/docker/compose.Makefile
+include lib/common/02_help.Makefile
 ```
 
-The Makefile should forward targets accordingly:
+## Brick catalogue
 
-```makefile
-install: ## Install dependencies
-        @cd app && npm ci
+Target names follow the chrysa canonical naming policy (`lint`/`format`/`test`/
+`typecheck`/`pre-commit`…), enforced by `makefile-check`.
 
-build: ## Build the application
-        @cd app && npm run build
-```
+| Brick | Key targets |
+| --- | --- |
+| `common/help` | `help`, `help-%`, `check-defined-%` |
+| `common/lifecycle` | `dev`, `build`, `ci`, `docker-test` |
+| `python/quality` | `lint`, `lint-fix`, `format`, `typecheck` |
+| `python/tests` | `test`, `test-cov`, `test-report` |
+| `python/deps` | `install`, `deps-outdated`, `deps-audit` |
+| `python/clean` | `clean`, `clean-reports` |
+| `quality/precommit` | `pre-commit`, `pre-commit-install`, `pre-commit-update` |
+| `quality/coverage-gate` | `coverage-gate` (fail below `COVERAGE_MIN`) |
+| `js/node` | `web-install/dev/build/preview/lint/format/typecheck/test/test-cov/clean` |
+| `unity/unity` | `unity-tests`, `unity-tests-play`, `unity-build`, `unity-license` |
+| `docker/compose` | `docker-build/up/down/ps/logs/sh` |
+| `docker/runner` | sets `RUN` to a container wrapper; `runner-shell` |
+| `docker/build` | `image-build`, `image-tag`, `image-push` |
+| `django/manage` | `manage`, `migrate`, `makemigrations(-check)`, `showmigrations`, `django-shell`, `superuser` |
+| `db/alembic` | `db-upgrade`, `db-downgrade`, `db-revision`, `db-current`, `db-history` |
+| `infra/helm` | `helm-lint/render/package/diff/deploy` |
+| `infra/terraform` | `tf-init/fmt/validate/plan/apply/destroy` |
+| `docs/sphinx` | `docs-html`, `docs-serve`, `docs-clean` |
+| `git/github` | `git-clean-check`, `version`, `pr-create`, `pr-view` |
+| `ops/backup` | `backup`, `restore` |
+| `ops/docs` | `docs`, `docs-check` |
+| `ops/release` | `changelog`, `release-tag`, `release` |
 
-## `ci.Makefile` example
-
-When using `Makefile.with-sub-folder`, place CI-specific targets in `makefiles/ci.Makefile`:
-
-```makefile
-# makefiles/ci.Makefile
-# CI targets — run without Docker in CI runners
-
-.PHONY: ci-pre-commit
-ci-pre-commit: ## CI: run all pre-commit hooks
-        @pre-commit run --all-files
-
-.PHONY: ci-lint
-ci-lint: ## CI: run linter
-        @npm run lint --prefix app
-
-.PHONY: ci-test
-ci-test: ## CI: run test suite with coverage
-        @npm run test:ci --prefix app
-
-.PHONY: ci-build
-ci-build: ## CI: build for production
-        @npm run build --prefix app
-
-.PHONY: ci
-ci: ci-pre-commit ci-lint ci-test ci-build ## CI: run all checks
-```
-
-## Versioning
-
-This repository uses [GitVersion](https://gitversion.net/) for automatic semantic versioning driven by commit messages and branch names. Configuration is in [`GitVersion.yml`](GitVersion.yml).
+See `CONTRIBUTING.md` to add a brick or profile.

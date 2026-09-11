@@ -2,19 +2,33 @@
 
 ## Role
 
-Collection of reusable Makefile templates for chrysa / Forge-Stack-Workshop projects.
+Composable Make library for chrysa / Forge-Stack-Workshop projects: shared core
+(`lib/common/`) + single-purpose bricks (`lib/<category>/`) assembled by
+`profiles/`. Flat standalone templates live under `examples/`.
+See `README.md` for the layout and `CONTRIBUTING.md` for authoring rules.
 
 ## Language Rules
 
 - Language: English — all code, comments, documentation, instructions, and configuration files must be in English.
 
-## Available templates
+## Profiles (composable, use these first)
+
+| Profile | Stack |
+|---------|-------|
+| `profiles/micro.Makefile` | Flat Python tool/library (host-run) |
+| `profiles/frontend.Makefile` | Node/Vite front-end (npm/pnpm/yarn) |
+| `profiles/django.Makefile` | Dockerized Django/DRF app |
+| `profiles/fullstack.Makefile` | Django backend + Node front-end monorepo |
+
+Copy `lib/` + one profile (renamed `Makefile`) into the target project.
+
+## Flat examples (no `lib/`)
 
 | File | Usage |
 |---------|-------|
-| `Makefile.basic` | Simple single-file project |
-| `Makefile.with-sub-folder` | Multi-file project with `makefiles/` (auto-detected categories) |
-| `Makefile.python` | Python profile with lint/test/format/venv targets |
+| `examples/Makefile.basic` | Simple single-file project |
+| `examples/Makefile.with-sub-folder` | Multi-file project with `makefiles/` (auto-detected categories) |
+| `examples/Makefile.python` | Python single-file template with lint/test/format targets |
 
 ## Required convention
 
@@ -39,7 +53,9 @@ Place `*.Makefile` files in `makefiles/`. The `help` target groups by filename:
 | `ci.Makefile` | ⚙️ | CI/CICD |
 | `global_rules.Makefile` | *(hidden)* | *(skipped in help)* |
 
-A sample `makefiles/` directory is committed; `scripts/smoke-test.sh` dry-runs every template's `help` and asserts no stderr (wired into CI `validate-makefile`).
+A sample `examples/makefiles/` directory is committed; `scripts/smoke-test.sh`
+dry-runs every profile's and example's `help` and asserts no stderr (wired into
+CI `validate-makefile`).
 
 ## CI / Standards
 
