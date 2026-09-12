@@ -1,7 +1,5 @@
 updates:
-- assignees:
-  - chrysa
-  commit-message:
+- commit-message:
     prefix: '[SKIP CI] [GA] '
   cooldown:
     default-days: 7
@@ -22,14 +20,10 @@ updates:
   - Ci
   open-pull-requests-limit: 8
   package-ecosystem: github-actions
-  reviewers:
-  - chrysa
   schedule:
     cronjob: 0 4 * * 5
     interval: cron
-- assignees:
-  - chrysa
-  commit-message:
+- commit-message:
     prefix: '[SKIP CI] [pre-commit] '
   directory: /
   labels:
@@ -38,8 +32,6 @@ updates:
   - Pre-commit
   open-pull-requests-limit: 2
   package-ecosystem: pre-commit
-  reviewers:
-  - chrysa
   schedule:
     cronjob: 0 4 * * 5
     interval: cron
