@@ -63,6 +63,25 @@ CI `validate-makefile`).
 - pre-commit: `.pre-commit-config.yaml`
 - Automatic versioning: GitVersion (`GitVersion.yml`)
 
+## Documentation map
+
+Reference docs at repo root (generated docs-only pass; tagged FACT/INFERENCE/UNKNOWN):
+
+| Doc | Use for |
+| --- | --- |
+| `README.md` | Layout, install, conventions, brick catalogue |
+| `ARCHITECTURE.md` | Layers, include contract, host/container mode, brick+profile map |
+| `TRD.md` | Macros, help generation, guards, CI/CD, installer, smoke-test internals |
+| `REQUIREMENTS.md` | REQ-TECH matrix (IMPLEMENTED, with evidence) |
+| `CONSTRAINTS.md` | Authoring rules, structural + ecosystem constraints |
+| `DECISIONS.md` | ADR log (composability, `$(RUN)`, generated help, standard, CD fix) |
+| `TESTING.md` | Smoke-test gate + CI jobs + coverage gaps |
+| `SECURITY.md` | Secret scan (clean) + low-severity findings for owner |
+| `GLOSSARY.md` | Term definitions |
+| `REVIEW.md` | Contradictions, doc debt, UNKNOWNs |
+| `CONTRIBUTING.md` | How to add a brick / profile |
+| `HANDOFF.md` | Author handoff (partially stale — see REVIEW.md) |
+
 ## Links
 
 - [GitHub](https://github.com/Forge-Stack-Workshop/base-makefile)
