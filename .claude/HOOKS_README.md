@@ -45,7 +45,7 @@ echo '{"tool_name":"Bash","tool_input":{"command":"echo hello"}}' \
 
 **Disable for a line:** Add `# nosecret` or `// nosecret` on the line.
 
-**Allowlist file:** `.claude/secret-scanner-allowlist.json`
+**Allowlist file:** `.claude/secret-scanner-allowlist.json <!-- ⚠️ file not found — verify reference -->`
 ```json
 {
   "patterns": ["sk-test-placeholder"],
@@ -132,7 +132,7 @@ echo '{"prompt":"implement a function to sort a list"}' | node .claude/hooks/fru
 
 **Purpose:** Warn (not block) when written files exceed measurable quality thresholds.
 
-**Thresholds config:** `.claude/thresholds.json`
+**Thresholds config:** `.claude/thresholds.json <!-- ⚠️ file not found — verify reference -->`
 ```json
 {
   "max_function_lines": 50,
@@ -213,7 +213,7 @@ node .claude/hooks/model-debt-inventory.cjs --dir /path/to/repo
 ## Installation in a repository
 
 1. Copy the hooks to `.claude/hooks/` in your target repository
-2. Merge with your existing `.claude/settings.json`:
+2. Merge with your existing `.claude/settings.json <!-- ⚠️ file not found — verify reference -->`:
 
 ```json
 {
@@ -246,8 +246,8 @@ node .claude/hooks/model-debt-inventory.cjs --dir /path/to/repo
 }
 ```
 
-3. Adjust `.claude/thresholds.json` for your project standards
-4. Add `.claude/secret-scanner-allowlist.json` if you have test fixtures with example tokens
+3. Adjust `.claude/thresholds.json <!-- ⚠️ file not found — verify reference -->` for your project standards
+4. Add `.claude/secret-scanner-allowlist.json <!-- ⚠️ file not found — verify reference -->` if you have test fixtures with example tokens
 
 ## Disabling a hook
 
