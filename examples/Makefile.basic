@@ -7,11 +7,9 @@ endif
 # ─── Variables ────────────────────────────────────────────────────────────────
 PROJECT_NAME ?= My Project
 
-include $(shell find . -type f -name "*.[Mm]akefile" -not -path "*/\.*" -exec echo " {}" \;)
-
 .DEFAULT_GOAL := help
 
-.PHONY: $(shell grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(shell find . (-name "*.Makefile" -or -name "*.mk") -type f) | sort | cut -d":" -f1 | tr "\n" " ")
+.PHONY: $(shell grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | cut -d":" -f1 | tr "\n" " ")
 
 help: ## Display this help message
 	@echo "==================================================================="
@@ -20,23 +18,8 @@ help: ## Display this help message
 	@echo ""
 	@echo "Available commands:"
 	@echo ""
-	@for file in  $(shell find . -type f -name "*.[Mm]akefile" -not -path "*/\.*" -exec echo " {}" \; 2>/dev/null | sort); do \
-		category=$$(basename $$file .Makefile); \
-		case $$category in \
-			gobal_rules) continue ;; \
-			development) icon="⚡" ;; \
-			docker)      icon="🐳" ;; \
-			quality)     icon="🔍" ;; \
-			tests)       icon="🧪" ;; \
-			tools)       icon="🔧" ;; \
-			project)     icon="🚀" ;; \
-			ci|cicd)     icon="⚙️"  ;; \
-			lint)        icon="🧹" ;; \
-			secrets)     icon="🔐" ;; \
-			*)           icon="📌" ;; \
-		esac; \
-		echo "$$icon $$(echo $$category | tr '[:lower:]' '[:upper:]'):"; \
-		grep -E '^[a-zA-Z_-]+(\([^)]*\))?:.*?## .*$$' $$file 2>/dev/null | sort | \
+	@for makefile in $(shell echo $(MAKEFILE_LIST) | sort); do \
+		grep -E '^[a-zA-Z_-]+(\([^)]*\))?:.*?## .*$$' $$makefile 2>/dev/null | sort | \
 			awk 'BEGIN {FS = ":.*?## "}; { \
 				cmd = $$1; \
 				desc = $$2; \
@@ -52,23 +35,19 @@ help: ## Display this help message
 	done
 	@echo "📝 EXAMPLES:"
 	@echo "  make dev              # Start development server"
-	@echo "  make build       # Build for production"
+	@echo "  make build            # Build for production"
 	@echo "  make format           # Format code"
 	@echo "  make test             # Run tests"
 	@echo ""
 	@echo "Environment Variables:"
-	@echo "  SERVICE=$(SERVICE)"
+	@echo "  PROJECT_NAME=$(PROJECT_NAME)"
 	@echo ""
 	@echo "==================================================================="
 
-help-%: ## Show detailed help for a specific command
-	@echo "Showing help for: $*"
-	@grep -A 5 -B 2 "^$*:" $(shell find makefiles -name "*.Makefile" -type f) || echo "Command '$*' not found"
-
 # ─── Standard targets (shared-standards EXECUTION_STANDARD.md §1) ──────────────
-# Stubs so a fresh scaffold passes `makefile-check` (which reads only this root
-# file, not the included makefiles/). Move each into the matching
-# makefiles/<category>.Makefile and delete it here as you wire the real command.
+# Stubs so a fresh scaffold passes `makefile-check`. Replace each TODO with the
+# real command for your stack (npm, cargo, go, helm…). Covers the lib + infra
+# tiers; for python-app / fullstack use Makefile.python / Makefile.with-sub-folder.
 
 install: ## Install dependencies
 	@echo "TODO: install dependencies"
