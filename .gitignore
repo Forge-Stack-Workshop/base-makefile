@@ -22,3 +22,11 @@ Thumbs.db
 
 # CodeGraph (local index — never commit)
 .codegraph/
+
+.claude-plugin-setup-report.md
+
+# ai-lint: keep secrets and local config out of git
+*.pem
+*.key
+secrets/
+CLAUDE.local.md
