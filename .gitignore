@@ -18,3 +18,10 @@ Thumbs.db
 
 # CodeGraph (local index — never commit)
 .codegraph/
+
+# prism-ai-lint: keep secrets and local config out of git
+*.pem
+*.key
+secrets/
+.claude/settings.local.json
+CLAUDE.local.md
