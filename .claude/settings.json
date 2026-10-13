@@ -1,7 +1,7 @@
 {
   "autoCompact": true,
   "autoCompactThreshold": 0.85,
-  "effortLevel": "medium",
+  "effortLevel": "low",
   "hooks": {
     "Notification": [
       {
@@ -80,5 +80,6 @@
         "matcher": "*"
       }
     ]
-  }
+  },
+  "model": "haiku"
 }
