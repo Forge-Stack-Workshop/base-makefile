@@ -23,6 +23,12 @@
             "name": "verifiable-thresholds",
             "timeout": 10000,
             "type": "command"
+          },
+          {
+            "command": "node .claude/hooks/makefile-syntax-check.cjs",
+            "name": "makefile-syntax-check",
+            "timeout": 10000,
+            "type": "command"
           }
         ],
         "matcher": "Write|Edit|MultiEdit"
