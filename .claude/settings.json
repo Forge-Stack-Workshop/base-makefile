@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "autoCompact": true,
   "autoCompactThreshold": 0.85,
   "effortLevel": "low",
@@ -19,13 +20,16 @@
       {
         "hooks": [
           {
-            "command": "node .claude/hooks/verifiable-thresholds.cjs",
+            "command": "node",
             "name": "verifiable-thresholds",
             "timeout": 10000,
-            "type": "command"
+            "type": "command",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/verifiable-thresholds.cjs"
+            ]
           }
         ],
-        "matcher": "Write|Edit|MultiEdit"
+        "matcher": "Write|Edit"
       }
     ],
     "PreCompact": [
@@ -37,22 +41,40 @@
             "type": "command"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-compact.sh"
+            ],
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PreToolUse": [
       {
         "hooks": [
           {
-            "command": "node .claude/hooks/secret-scanner.cjs",
+            "command": "node",
             "name": "secret-scanner",
             "timeout": 10000,
-            "type": "command"
+            "type": "command",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/secret-scanner.cjs"
+            ]
           },
           {
-            "command": "node .claude/hooks/circuit-breaker.cjs",
+            "command": "node",
             "name": "circuit-breaker",
             "timeout": 5000,
-            "type": "command"
+            "type": "command",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/circuit-breaker.cjs"
+            ]
           }
         ],
         "matcher": "Bash"
@@ -65,20 +87,133 @@
           }
         ],
         "matcher": "Bash"
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/read_guard.py"
+            ],
+            "timeout": 10
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
           {
-            "command": "node .claude/hooks/frustration-detection.cjs",
+            "command": "node",
             "name": "frustration-detection",
             "timeout": 5000,
-            "type": "command"
+            "type": "command",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/frustration-detection.cjs"
+            ]
           }
         ],
         "matcher": "*"
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/session-context.sh"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "model": "haiku",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Bash(rtk git status *)",
+      "Bash(rtk git diff *)",
+      "Bash(rtk git log *)",
+      "Bash(rtk git show *)",
+      "Bash(rtk git branch *)",
+      "Bash(rtk git add *)",
+      "Bash(rtk git commit *)",
+      "Bash(rtk gh pr view *)",
+      "Bash(rtk gh pr list *)",
+      "Bash(rtk gh pr diff *)",
+      "Bash(rtk gh pr checks *)",
+      "Bash(rtk gh issue view *)",
+      "Bash(rtk gh issue list *)",
+      "Bash(rtk gh run list *)",
+      "Bash(rtk gh run view *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(gh pr create *)",
+      "Bash(gh pr merge *)",
+      "Bash(gh release *)",
+      "Bash(gh repo *)",
+      "Bash(kubectl apply *)",
+      "Bash(kubectl delete *)",
+      "Bash(kubectl patch *)",
+      "Bash(helm install *)",
+      "Bash(helm upgrade *)",
+      "Bash(helm uninstall *)",
+      "Bash(argocd *)",
+      "Bash(terraform apply *)",
+      "Bash(terraform destroy *)",
+      "Bash(tofu apply *)",
+      "Bash(tofu destroy *)",
+      "Bash(bao write *)",
+      "Bash(vault write *)",
+      "Bash(docker push *)",
+      "Bash(npm publish *)",
+      "Bash(twine upload *)",
+      "Bash(rm -rf *)",
+      "Bash(rtk git push *)",
+      "Bash(rtk gh pr create *)",
+      "Bash(rtk gh pr merge *)",
+      "Bash(rtk gh release *)",
+      "Bash(rtk gh repo *)",
+      "Bash(rtk kubectl apply *)",
+      "Bash(rtk kubectl delete *)",
+      "Bash(rtk kubectl patch *)",
+      "Bash(rtk helm install *)",
+      "Bash(rtk helm upgrade *)",
+      "Bash(rtk helm uninstall *)",
+      "Bash(rtk argocd *)",
+      "Bash(rtk terraform apply *)",
+      "Bash(rtk terraform destroy *)",
+      "Bash(rtk tofu apply *)",
+      "Bash(rtk tofu destroy *)",
+      "Bash(rtk bao write *)",
+      "Bash(rtk vault write *)",
+      "Bash(rtk docker push *)",
+      "Bash(rtk npm publish *)",
+      "Bash(rtk twine upload *)",
+      "Bash(rtk rm -rf *)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.kube/**)",
+      "Read(~/.vault-token)",
+      "Read(!.env.example)",
+      "Read(**/.terraform/**)"
     ]
   },
   "model": "haiku"
