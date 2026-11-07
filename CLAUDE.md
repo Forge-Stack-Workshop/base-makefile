@@ -1,5 +1,7 @@
 # CLAUDE.md — base-makefile
 
+@AGENTS.md
+
 ## Role
 
 Collection of reusable Makefile templates for chrysa / Forge-Stack-Workshop projects.
